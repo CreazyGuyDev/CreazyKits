@@ -1,0 +1,11 @@
+name: CreazyKits
+version: '1.0-SNAPSHOT'
+main: pl.creazy.creazykits.CreazyKits
+api-version: '1.21'
+authors: [ Dawid Ratajczak ]
+website: creazy.pl
+depend:
+  - CreazyLib
+commands:
+  kit:
+    description: manage kits
