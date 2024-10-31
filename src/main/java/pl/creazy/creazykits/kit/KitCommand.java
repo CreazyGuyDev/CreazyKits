@@ -70,7 +70,7 @@ class KitCommand implements TabCompleteHandler {
               .filter(name -> name.startsWith(args[1]))
               .toList();
         }
-        case "update" -> {
+        case "update", "remove" -> {
           return kitManager.getKitsNames();
         }
       }
