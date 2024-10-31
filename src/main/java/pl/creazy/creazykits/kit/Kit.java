@@ -14,10 +14,8 @@ import pl.creazy.creazylib.data.persistence.nbt.NbtEditor;
 import pl.creazy.creazylib.util.key.Key;
 import pl.creazy.creazylib.util.mc.Mc;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class Kit implements ConfigurationSerializable {
@@ -64,7 +62,9 @@ public class Kit implements ConfigurationSerializable {
     if (delays == null) {
       nbt.set(DELAYS_KEY, new KitDelay[]{delay});
     } else {
-      var newDelays = new ArrayList<>(Arrays.asList(delays));
+      var newDelays = new ArrayList<>(Arrays.asList(delays)).stream()
+          .filter(other -> other.getKitName().equals(name))
+          .collect(Collectors.toList());
       newDelays.add(delay);
       nbt.set(DELAYS_KEY, newDelays.toArray(KitDelay[]::new));
     }

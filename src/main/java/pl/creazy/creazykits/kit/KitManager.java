@@ -107,13 +107,15 @@ public class KitManager {
       return Message.create(messages.getKitNotExist(), Placeholder.name(kitName));
     }
 
-    kit.give(player);
-
-    return Message.create(
-        messages.getKitGave(),
-        Placeholder.name(kitName),
-        Placeholder.playerName(player.getDisplayName())
-    );
+    if (kit.give(player)) {
+      return Message.create(
+          messages.getKitGave(),
+          Placeholder.name(kitName),
+          Placeholder.playerName(player.getDisplayName())
+      );
+    } else {
+     return Message.create("delay");
+    }
   }
 
   public @NotNull Message removeKit(@NotNull String kitName, @NotNull CreazyPlugin plugin) {

@@ -22,10 +22,11 @@ class KitCommand implements TabCompleteHandler {
   @Injected
   private CreazyKits plugin;
 
-  @Args("create ?s")
+  @Args("create ?s ?l")
   @HasPermissions("creazykits.kit.create")
-  void createKit(Player sender, String kitName) {
+  void createKit(Player sender, String kitName, long delay) {
     var kit = new Kit(kitName);
+    kit.setDelay(delay);
     var context = new KitMenuContext();
     context.setKit(kit);
     ContextPlayerMenu.open(KitMenu.class, sender, context);
@@ -75,8 +76,15 @@ class KitCommand implements TabCompleteHandler {
         }
       }
     }
-    if (args.length == 3 && "give".equals(args[0])) {
-      return kitManager.getKitsNames();
+    if (args.length == 3) {
+      switch (args[0]) {
+        case "give" -> {
+          return kitManager.getKitsNames();
+        }
+        case "create" -> {
+          return List.of("Enter delay");
+        }
+      }
     }
     return null;
   }
