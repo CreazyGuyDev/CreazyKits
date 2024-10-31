@@ -34,17 +34,17 @@ class KitCommand implements TabCompleteHandler {
   @Args("give ?s ?s")
   @HasPermissions("creazykits.kit.give")
   void giveKit(Player sender, String playerName, String kitName) {
-    var player = Bukkit.getPlayer(playerName);
-    var kit = kitManager.getKit(kitName, plugin);
-    if (player == null || kit == null) {
-      return;
-    }
-    kit.give(sender, true);
+    kitManager.giveKit(kitName, playerName, plugin).sendChat(sender);
   }
 
   @Args("update ?s")
   @HasPermissions("creazykits.kit.update")
   void updateKit(Player sender, String kitName) {
+    var status = kitManager.kitExistsMessage(kitName, plugin);
+    if (!status.status()) {
+      status.result().sendChat(sender);
+      return;
+    }
     var context = new KitMenuContext();
     context.setUpdate(true);
     context.setKitName(kitName);
@@ -54,7 +54,7 @@ class KitCommand implements TabCompleteHandler {
   @Args("remove ?s")
   @HasPermissions("creazykits.kit.remove")
   void removeKit(Player sender, String kitName) {
-    kitManager.removeKit(kitName, plugin);
+    kitManager.removeKit(kitName, plugin).sendChat(sender);
   }
 
   @Override

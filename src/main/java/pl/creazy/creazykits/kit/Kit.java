@@ -49,13 +49,13 @@ public class Kit implements ConfigurationSerializable {
     );
   }
 
-  public void give(@NotNull Player player) {
-    give(player, false);
+  public boolean give(@NotNull Player player) {
+    return give(player, false);
   }
 
-  public void give(@NotNull Player player, boolean ignorePermission) {
+  public boolean give(@NotNull Player player, boolean ignorePermission) {
     if (!canGet(player) && !ignorePermission) {
-      return;
+      return false;
     }
     Mc.addItems(player, getItems());
     var nbt = NbtEditor.of(player);
@@ -68,6 +68,7 @@ public class Kit implements ConfigurationSerializable {
       newDelays.add(delay);
       nbt.set(DELAYS_KEY, newDelays.toArray(KitDelay[]::new));
     }
+    return true;
   }
 
   public @NotNull List<String> getRequiredPermissions() {

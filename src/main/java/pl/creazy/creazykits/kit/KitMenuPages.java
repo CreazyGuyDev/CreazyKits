@@ -40,10 +40,10 @@ class KitMenuPages {
               .filter(item -> !ICON_ID.equals(Id.get(item)))
               .toArray(ItemStack[]::new);
           if (context.isUpdate()) {
-            kitManager.updateKit(context.getKitName(), content);
+            kitManager.updateKit(context.getKitName(), plugin, content).sendChat(player);
           } else {
             kit.addItems(content);
-            kitManager.addKit(kit, plugin);
+            kitManager.addKit(kit, plugin).sendChat(player);
           }
           player.closeInventory();
           player.playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
