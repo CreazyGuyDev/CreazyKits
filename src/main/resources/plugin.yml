@@ -1,6 +1,5 @@
 name: CreazyKits
 version: '1.0'
-version: '1.0'
 main: pl.creazy.creazykits.CreazyKits
 api-version: '1.21'
 authors: [ Dawid Ratajczak ]
