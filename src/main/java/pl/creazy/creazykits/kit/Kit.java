@@ -8,18 +8,19 @@ import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import pl.creazy.creazykits.CreazyKits;
 import pl.creazy.creazylib.data.persistence.nbt.NbtEditor;
 import pl.creazy.creazylib.util.key.Key;
 import pl.creazy.creazylib.util.mc.Mc;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 public class Kit implements ConfigurationSerializable {
-  private static final NamespacedKey DELAYS_KEY = Key.create("delay", CreazyKits.class);
+  private static final NamespacedKey DELAYS_KEY = Key.create("delays", CreazyKits.class);
 
   private final List<String> requiredPermissions = new ArrayList<>();
   private final List<ItemStack> items = new ArrayList<>();
@@ -47,27 +48,18 @@ public class Kit implements ConfigurationSerializable {
     );
   }
 
-  public boolean give(@NotNull Player player) {
+  boolean give(@NotNull Player player) {
     return give(player, false);
   }
 
-  public boolean give(@NotNull Player player, boolean ignorePermission) {
+  boolean give(@NotNull Player player, boolean ignorePermission) {
     if (!canGet(player) && !ignorePermission) {
       return false;
     }
     Mc.addItems(player, getItems());
-    var nbt = NbtEditor.of(player);
-    var delays = nbt.get(DELAYS_KEY, KitDelay[].class);
-    var delay = new KitDelay(this.delay, name);
-    if (delays == null) {
-      nbt.set(DELAYS_KEY, new KitDelay[]{delay});
-    } else {
-      var newDelays = new ArrayList<>(Arrays.asList(delays)).stream()
-          .filter(other -> other.getKitName().equals(name))
-          .collect(Collectors.toList());
-      newDelays.add(delay);
-      nbt.set(DELAYS_KEY, newDelays.toArray(KitDelay[]::new));
-    }
+    var delays = getKitDelays(player);
+    delays.setDelay(this);
+    NbtEditor.of(player).set(DELAYS_KEY, delays);
     return true;
   }
 
@@ -93,24 +85,14 @@ public class Kit implements ConfigurationSerializable {
         return false;
       }
     }
-    var delay = getPlayerDelay(player);
-    return delay == null || delay.isExpired();
-  }
-
-  public @Nullable KitDelay getPlayerDelay(@NotNull Player player) {
-    var delays = NbtEditor.of(player).get(DELAYS_KEY, KitDelay[].class);
-    if (delays != null) {
-      for (var delay : delays) {
-        if (delay.getKitName().equals(name)) {
-          return delay;
-        }
-      }
-    }
-    return null;
+    return getKitDelays(player).canGetKit(this);
   }
 
   void clearItems() {
     items.clear();
   }
 
+  private @NotNull KitDelays getKitDelays(@NotNull Player player) {
+    return NbtEditor.of(player).find(DELAYS_KEY, KitDelays.class).orElse(new KitDelays());
+  }
 }

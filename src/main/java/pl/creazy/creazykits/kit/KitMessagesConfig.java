@@ -27,4 +27,7 @@ public class KitMessagesConfig {
 
   @ConfigVar("player.not-exist")
   private String playerNotExist = "&aGracz &e${PLAYER_NAME} &anie istnieje";
+
+  @ConfigVar("kit.delay")
+  private String kitDelay = "&aNie możesz dostawać kitu &e${NAME} &atak często";
 }

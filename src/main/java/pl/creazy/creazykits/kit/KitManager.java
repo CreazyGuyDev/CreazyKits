@@ -81,7 +81,10 @@ public class KitManager {
     return Message.create(messages.getKitCreated(), Placeholder.name(kitName));
   }
 
-  public @Nullable Kit getKit(@NotNull String kitName, @NotNull CreazyPlugin plugin) {
+  public @Nullable Kit getKit(@Nullable String kitName, @NotNull CreazyPlugin plugin) {
+    if (kitName == null) {
+      return null;
+    }
     for (var kit : kits.getOrDefault(plugin.getName(), new ArrayList<>())) {
       if (kit.getName().equals(kitName)) {
         return kit;
@@ -91,30 +94,30 @@ public class KitManager {
     return null;
   }
 
-  public @NotNull Message giveKit(@NotNull String kitName, @NotNull String playerName, @NotNull CreazyPlugin plugin) {
+  public @NotNull Message giveKit(@NotNull String kitName, @NotNull String playerName, @NotNull CreazyPlugin plugin, boolean ignorePermissions) {
     var player = Bukkit.getPlayer(playerName);
 
     if (player == null) {
       return Message.create(messages.getPlayerNotExist(), Placeholder.playerName(playerName));
     }
-    return giveKit(kitName, player, plugin);
+    return giveKit(kitName, player, plugin, ignorePermissions);
   }
 
-  public @NotNull Message giveKit(@NotNull String kitName, @NotNull Player player, @NotNull CreazyPlugin plugin) {
+  public @NotNull Message giveKit(@NotNull String kitName, @NotNull Player player, @NotNull CreazyPlugin plugin, boolean ignorePermissions) {
     var kit = getKit(kitName, plugin);
 
     if (kit == null) {
       return Message.create(messages.getKitNotExist(), Placeholder.name(kitName));
     }
 
-    if (kit.give(player)) {
+    if (kit.give(player, ignorePermissions)) {
       return Message.create(
           messages.getKitGave(),
           Placeholder.name(kitName),
           Placeholder.playerName(player.getDisplayName())
       );
     } else {
-     return Message.create("delay");
+     return Message.create(messages.getKitDelay(), Placeholder.name(kitName));
     }
   }
 
